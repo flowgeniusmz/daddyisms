@@ -6,12 +6,12 @@ url = "https://discord.com/api/webhooks/1362061287856541897/r7Bma3wlnjwNUKpsb2-z
 
 # User input
 content = st.text_input(label="Alert")
-decision = st.selectbox("Decision", ["Yes", "No"])
+result = st.selectbox("Result", ["Win", "Loss"])
 
 # Submit button
 button = st.button(label="Submit")
 if button and content.strip():
-    full_message = f"{content}\nDecision: {decision}"
+    full_message = f"{content}\nResult: {result}"
     payload = {"content": full_message}
     response = requests.post(url=url, json=payload)
     st.write(f"Sent! Status: {response.status_code}")
