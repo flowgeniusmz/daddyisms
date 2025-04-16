@@ -17,7 +17,7 @@ content = st.text_input(label="Alert")
 
 button = st.button(label="Submit")
 if button:
-    payload = {"content": content}
+    payload = {"content": f"@everyone {content}"}
     for url in urls:
         response = requests.post(url=url, json=payload)
         print(response)
