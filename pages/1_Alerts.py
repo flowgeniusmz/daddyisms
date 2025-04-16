@@ -2,7 +2,8 @@ import streamlit as st
 import requests
 
 #fattybags club
-discord_url_1 = "https://discord.com/api/webhooks/1362055010292203661/EnUAjQWtzCxd8fSHANdg6CMiU-qp_RIwC2za6qazDQ6rK5c4lPi-e9Qod_Cx8SqAwb8Q"
+#discord_url_1 = "https://discord.com/api/webhooks/1362055010292203661/EnUAjQWtzCxd8fSHANdg6CMiU-qp_RIwC2za6qazDQ6rK5c4lPi-e9Qod_Cx8SqAwb8Q"
+discord_url_1 = "https://discord.com/api/webhooks/1362095902571106565/heUGL91PIzpa1Ah1KMY1KaBpW9vGSGwhRqDZULnTQYuErNEsK09p1c1bx_-Baou_RgYp"
 
 #daddy trades
 discord_url_2 = "https://discord.com/api/webhooks/1360719025696669756/kj7Ud2DolXNDdyZPcoUIzZoMFPP_mhNmRNT2fkvaS-XCEykgcwhPVEvLnzbSIPLpqQkg"
