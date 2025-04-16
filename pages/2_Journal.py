@@ -2,7 +2,9 @@ import streamlit as st
 import requests
 
 # Webhook URL
-url = "https://discord.com/api/webhooks/1362061287856541897/r7Bma3wlnjwNUKpsb2-zYYXTjGyQlZrGI1Rhqw7SvkNSUubysMmhN8z5jF3mwO-tsGBL"
+url1 = "https://discord.com/api/webhooks/1362061287856541897/r7Bma3wlnjwNUKpsb2-zYYXTjGyQlZrGI1Rhqw7SvkNSUubysMmhN8z5jF3mwO-tsGBL"
+url2 = "https://discord.com/api/webhooks/1362144062244651161/-gIpndW2OncFgB4PaEsStrDypBBO6VZZXpCtU3BU6rpj6vUOg87BOy2NFKdDeXBcxi1e"
+urls = [url1, url2]
 
 # Inputs
 content = st.text_input("Alert")
@@ -37,8 +39,9 @@ if st.button("Submit") and content.strip() and result:
         f"Change: {percent_change:.2f}%"
     )
     payload = {"content": full_message}
-    response = requests.post(url=url, json=payload)
-    st.success(f"Sent! Status: {response.status_code}")
+    for url in urls:
+        response = requests.post(url=url, json=payload)
+        st.success(f"Sent! Status: {response.status_code}")
 
 
 
