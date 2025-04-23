@@ -10,7 +10,7 @@ st.markdown("Your premier destination for trading insights, strategies, and perf
 # Hero Section
 st.header("Empowering Wealth Creation")
 st.write("At Daddy Trades, we provide tools and insights to help traders make informed decisions and maximize profits. Whether you're a beginner or a seasoned trader, our platform offers everything you need to succeed in the markets.")
-st.image("https://via.placeholder.com/1200x400.png?text=Daddy+Trades+Banner", use_container_width=True)
+st.markdown("👑")
 
 # Features Section
 st.header("Why Choose Daddy Trades?")
