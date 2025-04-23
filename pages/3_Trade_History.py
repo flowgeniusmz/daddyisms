@@ -16,6 +16,9 @@ avg_win_percent = wins["% Change"].mean() if total_wins > 0 else 0
 avg_loss_percent = losses['% Change'].mean() if total_losses > 0 else 0
 biggest_win = wins["% Change"].max() if total_wins > 0 else 0
 biggest_loss = losses["% Change"].min() if total_losses > 0 else 0
+cumulative_exit = (df_journal['Exit Price'].sum() ) if total_trades > 0 else 0
+cumulative_entry = (df_journal['Entry Price'].sum() ) if total_trades > 0 else 0
+cumulative_profit = (df_journal['Exit Price'].sum() - df_journal['Entry Price'].sum()) if total_trades > 0 else 0
 
 st.header("📈 Trade History")
 st.subheader("Summary Statistics")
@@ -26,6 +29,16 @@ col3.metric("Avg Win %", f"{avg_win_percent:.2f}%")
 col1.metric("Avg Loss %", f"{avg_loss_percent:.2f}%")
 col2.metric("Biggest Win", f"{biggest_win:.2f}%")
 col3.metric("Biggest Loss", f"{biggest_loss:.2f}%")
+#col1.metric("Cumulative Profit", f"${cumulative_profit:.2f}")
+
+st.divider()
+st.subheader("Cumulative Statistics")
+st.caption("Assumes a quantity of 1 option per trade. Cumulative Profit = Cumulative Exit - Cumulative Entry.")
+col1, col2, col3 = st.columns(3)
+col1.metric("Cumulative Exit", f"${cumulative_exit:.2f}")
+col2.metric("Cumulative Entry", f"${cumulative_entry:.2f}")
+col3.metric("Cumulative Profit", f"${cumulative_profit:.2f}")
+
 st.divider()
 st.subheader("Trade Journal")
 
