@@ -1,2 +1,4 @@
 Timestamp,Alert,Result,Emoji,Entry Price,Exit Price,% Change
 2025-04-17 18:23:07,TEST,Win,🟢,12.0,20.0,66.67
+2025-04-23 04:07:08,TEST,Win,🟢,20.0,25.0,25.0
+2025-04-23 04:07:23,TEST,Loss,🔴,20.0,15.0,-25.0
