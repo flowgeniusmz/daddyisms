@@ -19,7 +19,6 @@ biggest_loss = losses["% Change"].min() if total_losses > 0 else 0
 cumulative_exit = (df_journal['Exit Price'].sum()) if total_trades > 0 else 0
 cumulative_entry = (df_journal['Entry Price'].sum()) if total_trades > 0 else 0
 cumulative_profit = (df_journal['Exit Price'].sum() - df_journal['Entry Price'].sum()) if total_trades > 0 else 0
-scenario_profit = (df_journal['% Change'] / 100 * 100).sum() if total_trades > 0 else 0
 
 st.header("📈 Trade History")
 st.subheader("Summary Statistics")
@@ -41,9 +40,15 @@ col3.metric("Cumulative Profit", f"${cumulative_profit:.2f}")
 
 st.divider()
 st.subheader("Scenario Statistics")
-st.caption("Assumes a $100 position size per trade. Cumulative Profit = Sum of ($100 * % Change / 100) for each trade.")
+st.caption("Set position size per trade. Profit per trade = Position Size * (% Change / 100).")
+position_size = st.number_input("Position Size ($)", min_value=0.0, value=100.0, step=10.0)
+scenario_entry = position_size * total_trades if total_trades > 0 else 0
+scenario_exit = (position_size * (1 + df_journal['% Change'] / 100)).sum() if total_trades > 0 else 0
+scenario_profit = (df_journal['% Change'] / 100 * position_size).sum() if total_trades > 0 else 0
 col1, col2, col3 = st.columns(3)
-col1.metric("Cumulative Profit ($100/trade)", f"${scenario_profit:.2f}")
+col1.metric(f"Cumulative Exit (${position_size}/trade)", f"${scenario_exit:.2f}")
+col2.metric(f"Cumulative Entry (${position_size}/trade)", f"${scenario_entry:.2f}")
+col3.metric(f"Cumulative Profit (${position_size}/trade)", f"${scenario_profit:.2f}")
 
 st.divider()
 st.subheader("Trade Journal")
