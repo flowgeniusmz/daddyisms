@@ -4,13 +4,16 @@ import pandas as pd
 import os
 from datetime import datetime
 
-# Ensure persistent directory exists
-os.makedirs("data", exist_ok=True)
-csv_path = os.path.join("data", "journal.csv")
+# # Ensure persistent directory exists
+# os.makedirs("data", exist_ok=True)
+# csv_path = os.path.join("data", "journal.csv")
 
-# Create file if it doesn't exist
-if not os.path.exists(csv_path):
-    pd.DataFrame(columns=["Timestamp", "Alert", "Result", "Emoji", "Entry Price", "Exit Price", "% Change"]).to_csv(csv_path, index=False)
+# # Create file if it doesn't exist
+# if not os.path.exists(csv_path):
+#     pd.DataFrame(columns=["Timestamp", "Alert", "Result", "Emoji", "Entry Price", "Exit Price", "% Change"]).to_csv(csv_path, index=False)
+
+path = "journal.csv"
+
 
 # Webhook URLs
 url1 = "https://discord.com/api/webhooks/1362061287856541897/r7Bma3wlnjwNUKpsb2-zYYXTjGyQlZrGI1Rhqw7SvkNSUubysMmhN8z5jF3mwO-tsGBL"
@@ -59,7 +62,7 @@ if st.button("Submit") and content.strip() and result:
     }
 
     # Append new entry directly to file
-    with open(csv_path, mode="a", newline='', encoding='utf-8') as f:
+    with open(path, mode="a", newline='', encoding='utf-8') as f:
         pd.DataFrame([journal_entry]).to_csv(f, header=False, index=False)
 
     # Discord Embed Payload
@@ -87,7 +90,7 @@ if st.button("Submit") and content.strip() and result:
 # --- Display Journal ---
 st.divider()
 st.header("📈 Trade History")
-df_journal = pd.read_csv(csv_path)
+df_journal = pd.read_csv(path)
 st.dataframe(df_journal.sort_values(by="Timestamp", ascending=False), use_container_width=True)
 
 

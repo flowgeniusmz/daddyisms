@@ -2,6 +2,8 @@ import streamlit as st
 import requests
 import tempfile
 
+st.set_page_config(layout="wide")
+
 # Discord Webhook URL
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1360719040682660162/5AdyoOsvOJgwIGAs4JNC_9LFaEFN2-l9Zg8LF8-0IcmFTpi7d7xmaPIBLELjcwuR-QF1"
 
