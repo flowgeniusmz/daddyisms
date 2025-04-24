@@ -77,101 +77,146 @@ if btn_alert:
     color = 0
     if exit_price > 0:
         result, emoji, color, percent_change = get_result_emoji_color(entry_price=entry_price, exit_price=exit_price)
-
-### Display 2 - Update Journal
-st.subheader("2. Complete Journal Entry")
-st.divider()
-
-
-
-
-# --- Session State Setup ---
-if "alert_sent" not in st.session_state:
-    st.session_state.alert_sent = False
-    st.session_state.content = ""
-    st.session_state.entry_price = 0.0
-
-st.title("📊 Trading Journal & Alerts")
-
-# --- Stage 1: Send Alert ---
-if not st.session_state.alert_sent:
-    st.subheader("1. Send Trade Alert")
-    content = st.text_input("Alert")
-    entry_price = st.number_input("Entry Price", min_value=0.0, format="%.2f")
-    if st.button("Send Alert") and content.strip() and entry_price > 0:
-        payload = {"content": f"@everyone {content} | Entry Price: ${entry_price:.2f}"}
-        for url in alert_urls:
-            requests.post(url=url, json=payload)
-        st.success("✅ Alert sent!")
-        st.session_state.alert_sent = True
-        st.session_state.content = content
-        st.session_state.entry_price = entry_price
-        #st.experimental_rerun()
-
-# --- Stage 2: Complete Journal Entry ---
-if st.session_state.alert_sent:
-    st.subheader("2. Complete Journal Entry")
-    content = st.session_state.content
-    entry_price = st.session_state.entry_price
-    exit_price = st.number_input("Exit Price", min_value=0.0, format="%.2f")
-    percent_change = None
-    result = None
-    emoji = ""
-    color = 0
-
-    if exit_price > 0:
-        percent_change = ((exit_price - entry_price) / entry_price) * 100
-        if exit_price > entry_price:
-            result, emoji, color = "Win", "🟢", 0x00ff00
-        elif exit_price < entry_price:
-            result, emoji, color = "Loss", "🔴", 0xff0000
-        else:
-            result, emoji, color = "Break Even", "⚪", 0xcccccc
-
-    if result:
-        st.markdown(f"**Result:** {emoji} {result}")
-        st.markdown(f"**Change:** {percent_change:.2f}%")
-
-    if st.button("Submit Journal") and result:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        journal_entry = {
-            "Timestamp": timestamp,
-            "Alert": content,
-            "Result": result,
-            "Emoji": emoji,
-            "Entry Price": round(entry_price, 2),
-            "Exit Price": round(exit_price, 2),
-            "% Change": round(percent_change, 2),
-        }
-        # Append to CSV
-        with open(csv_path, mode="a", newline='', encoding='utf-8') as f:
-            pd.DataFrame([journal_entry]).to_csv(f, header=False, index=False)
-        # Send embed to Discord
-        embed_payload = {
-            "embeds": [
-                {
-                    "title": f"{emoji} Trade Alert",
-                    "description": f"**{content}**",
-                    "color": color,
-                    "fields": [
-                        {"name": "Result", "value": result, "inline": True},
-                        {"name": "Entry Price", "value": f"${entry_price:.2f}", "inline": True},
-                        {"name": "Exit Price", "value": f"${exit_price:.2f}", "inline": True},
-                        {"name": "Change", "value": f"{percent_change:.2f}%", "inline": True},
-                    ],
-                    "timestamp": datetime.utcnow().isoformat(),
+        if result:
+            st.markdown(f"**Result:** {emoji} {result}")
+            st.markdown(f"**Change:** {percent_change:.2f}%")
+            btn_journal = st.button(label="Submit Journal")
+            if btn_journal:
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                journal_entry = {
+                    "Timestamp": timestamp,
+                    "Alert": alert,
+                    "Result": result,
+                    "Emoji": emoji,
+                    "Entry Price": round(entry_price, 2),
+                    "Exit Price": round(exit_price, 2),
+                    "% Change": round(percent_change, 2),
                 }
-            ]
-        }
-        for url in journal_urls:
-            requests.post(url=url, json=embed_payload)
-        st.success("✅ Journal entry submitted!")
-        # Reset for next trade
-        st.session_state.alert_sent = False
-        #st.experimental_rerun()
+                
+        # Append to CSV
+                with open(csv_path, mode="a", newline='', encoding='utf-8') as f:
+                    pd.DataFrame([journal_entry]).to_csv(f, header=False, index=False)
+                # Send embed to Discord
+                embed_payload = {
+                    "embeds": [
+                        {
+                            "title": f"{emoji} Trade Alert",
+                            "description": f"**{alert}**",
+                            "color": color,
+                            "fields": [
+                                {"name": "Result", "value": result, "inline": True},
+                                {"name": "Entry Price", "value": f"${entry_price:.2f}", "inline": True},
+                                {"name": "Exit Price", "value": f"${exit_price:.2f}", "inline": True},
+                                {"name": "Change", "value": f"{percent_change:.2f}%", "inline": True},
+                            ],
+                            "timestamp": datetime.utcnow().isoformat(),
+                        }
+                    ]
+                }
+                for url in journal_urls:
+                    requests.post(url=url, json=embed_payload)
+                st.success("✅ Journal entry submitted!")
 
 # --- Display Journal History ---
 st.markdown("---")
 st.header("📈 Trade History")
 df_journal = pd.read_csv(csv_path)
 st.dataframe(df_journal.sort_values(by="Timestamp", ascending=False), use_container_width=True)
+
+# ### Display 2 - Update Journal
+# st.subheader("2. Complete Journal Entry")
+# st.divider()
+
+
+
+
+# # --- Session State Setup ---
+# if "alert_sent" not in st.session_state:
+#     st.session_state.alert_sent = False
+#     st.session_state.content = ""
+#     st.session_state.entry_price = 0.0
+
+# st.title("📊 Trading Journal & Alerts")
+
+# # --- Stage 1: Send Alert ---
+# if not st.session_state.alert_sent:
+#     st.subheader("1. Send Trade Alert")
+#     content = st.text_input("Alert")
+#     entry_price = st.number_input("Entry Price", min_value=0.0, format="%.2f")
+#     if st.button("Send Alert") and content.strip() and entry_price > 0:
+#         payload = {"content": f"@everyone {content} | Entry Price: ${entry_price:.2f}"}
+#         for url in alert_urls:
+#             requests.post(url=url, json=payload)
+#         st.success("✅ Alert sent!")
+#         st.session_state.alert_sent = True
+#         st.session_state.content = content
+#         st.session_state.entry_price = entry_price
+#         #st.experimental_rerun()
+
+# # --- Stage 2: Complete Journal Entry ---
+# if st.session_state.alert_sent:
+#     st.subheader("2. Complete Journal Entry")
+#     content = st.session_state.content
+#     entry_price = st.session_state.entry_price
+#     exit_price = st.number_input("Exit Price", min_value=0.0, format="%.2f")
+#     percent_change = None
+#     result = None
+#     emoji = ""
+#     color = 0
+
+#     if exit_price > 0:
+#         percent_change = ((exit_price - entry_price) / entry_price) * 100
+#         if exit_price > entry_price:
+#             result, emoji, color = "Win", "🟢", 0x00ff00
+#         elif exit_price < entry_price:
+#             result, emoji, color = "Loss", "🔴", 0xff0000
+#         else:
+#             result, emoji, color = "Break Even", "⚪", 0xcccccc
+
+#     if result:
+#         st.markdown(f"**Result:** {emoji} {result}")
+#         st.markdown(f"**Change:** {percent_change:.2f}%")
+
+#     if st.button("Submit Journal") and result:
+#         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+#         journal_entry = {
+#             "Timestamp": timestamp,
+#             "Alert": content,
+#             "Result": result,
+#             "Emoji": emoji,
+#             "Entry Price": round(entry_price, 2),
+#             "Exit Price": round(exit_price, 2),
+#             "% Change": round(percent_change, 2),
+#         }
+#         # Append to CSV
+#         with open(csv_path, mode="a", newline='', encoding='utf-8') as f:
+#             pd.DataFrame([journal_entry]).to_csv(f, header=False, index=False)
+#         # Send embed to Discord
+#         embed_payload = {
+#             "embeds": [
+#                 {
+#                     "title": f"{emoji} Trade Alert",
+#                     "description": f"**{content}**",
+#                     "color": color,
+#                     "fields": [
+#                         {"name": "Result", "value": result, "inline": True},
+#                         {"name": "Entry Price", "value": f"${entry_price:.2f}", "inline": True},
+#                         {"name": "Exit Price", "value": f"${exit_price:.2f}", "inline": True},
+#                         {"name": "Change", "value": f"{percent_change:.2f}%", "inline": True},
+#                     ],
+#                     "timestamp": datetime.utcnow().isoformat(),
+#                 }
+#             ]
+#         }
+#         for url in journal_urls:
+#             requests.post(url=url, json=embed_payload)
+#         st.success("✅ Journal entry submitted!")
+#         # Reset for next trade
+#         st.session_state.alert_sent = False
+#         #st.experimental_rerun()
+
+# # --- Display Journal History ---
+# st.markdown("---")
+# st.header("📈 Trade History")
+# df_journal = pd.read_csv(csv_path)
+# st.dataframe(df_journal.sort_values(by="Timestamp", ascending=False), use_container_width=True)
