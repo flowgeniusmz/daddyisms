@@ -2,6 +2,8 @@ import streamlit as st
 import prompts as p
 from openai import OpenAI
 import base64
+import tempfile
+import requests
 from pydantic import BaseModel
 
 # OpenAI Client Setup
@@ -10,7 +12,9 @@ model_image = "gpt-image-1"
 model_chat = "gpt-4.1"
 daddyism_prompt = p.daddyism_prompt()
 
-# Pydantic Class
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1360719040682660162/5AdyoOsvOJgwIGAs4JNC_9LFaEFN2-l9Zg8LF8-0IcmFTpi7d7xmaPIBLELjcwuR-QF1"
+
+# Pydantic Model
 class Daddyism(BaseModel):
     title: str
     category: str
@@ -27,6 +31,21 @@ def generate_image(prompt: str):
     )
     result_base64 = result.data[0].b64_json
     return base64.b64decode(result_base64)
+
+# Meme Poster
+def post_to_discord(image_bytes: bytes, message: str, filename: str = "daddyism.png") -> bool:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
+        tmp_file.write(image_bytes)
+        tmp_file_path = tmp_file.name
+
+    with open(tmp_file_path, "rb") as f:
+        files = {
+            'payload_json': (None, f'{{"content": "{message}"}}'),
+            'file1': (filename, f, "image/png")
+        }
+        response = requests.post(DISCORD_WEBHOOK_URL, files=files)
+
+    return response.status_code in [200, 204]
 
 # Daddyism Generator
 def generate_daddyism():
@@ -74,8 +93,15 @@ if "generated" in st.session_state:
             top_caption=top_caption_text,
             bottom_caption=bottom_caption_text
         )
+
         with st.spinner("Rendering Meme..."):
             image_bytes = generate_image(prompt_image)
+
+        with st.spinner("Sending to Discord..."):
+            success = post_to_discord(image_bytes, message=daddyism_text)
+
+        if success:
+            st.success("✅ Meme sent to Discord!")
             st.image(image_bytes, caption=title_text)
             st.download_button(
                 label="Download Meme as PNG",
@@ -83,3 +109,5 @@ if "generated" in st.session_state:
                 file_name=f"{title_text.replace(' ', '_').lower()}.png",
                 mime="image/png"
             )
+        else:
+            st.error("❌ Failed to send meme to Discord.")
