@@ -60,6 +60,7 @@ if st.button("Submit") and content.strip() and result:
         "Exit Price": round(exit_price, 2),
         "% Change": round(percent_change, 2)
     }
+    print(journal_entry)
 
     # Append new entry directly to file
     with open(path, mode="a", newline='', encoding='utf-8') as f:
