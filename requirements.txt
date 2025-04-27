@@ -16,3 +16,4 @@ extra_streamlit_components
 ipython
 pillow
 numpy
+openai-agents
