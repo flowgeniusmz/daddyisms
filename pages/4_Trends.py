@@ -20,10 +20,12 @@ current_year = current_date.isocalendar().year
 current_week = current_date.isocalendar().week
 previous_week = current_week - 1 if current_week > 1 else 52
 previous_year = current_year if current_week > 1 else current_year - 1
+previous_2week = current_week - 2 if current_week > 2 else 52
 
 # Filter data for current and previous week
 current_week_data = df_journal[(df_journal['Year'] == current_year) & (df_journal['Week'] == current_week)]
 previous_week_data = df_journal[(df_journal['Year'] == current_year) & (df_journal['Week'] == previous_week)]
+previous_2week_data = df_journal[(df_journal['Year'] == current_year) & (df_journal['Week'] == previous_2week)]
 
 # Function to calculate weekly stats
 def calculate_weekly_stats(df):
@@ -47,6 +49,7 @@ def calculate_weekly_stats(df):
 # Calculate stats
 current_stats = calculate_weekly_stats(current_week_data)
 previous_stats = calculate_weekly_stats(previous_week_data)
+previous_2stats = calculate_weekly_stats(previous_2week_data)
 
 # Display
 st.header("📅 Weekly Trade Analysis")
@@ -73,6 +76,17 @@ col1.metric("Net Trades (W-L)", previous_stats['net_trades'])
 col2.metric("Cumulative Profit", f"${previous_stats['cumulative_profit']:.2f}")
 st.divider()
 
+# Previous 2 Week Stats
+st.subheader(f"2 Weeks Ago (Week {previous_2week}, {current_year})")
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Total Trades", previous_2stats['total_trades'])
+col2.metric("Wins", f"{previous_2stats['wins']} ({previous_2stats['win_percent']:.1f}%)")
+col3.metric("Losses", previous_2stats['losses'])
+col4.metric("Check", previous_2stats['wins']+previous_2stats['losses'])
+col1.metric("Net Trades (W-L)", previous_2stats['net_trades'])
+col2.metric("Cumulative Profit", f"${previous_2stats['cumulative_profit']:.2f}")
+st.divider()
+
 # Week-over-Week Trends
 st.subheader("Week-over-Week Trends")
 weekly_stats = df_journal.groupby(['Year', 'Week']).apply(
@@ -87,7 +101,7 @@ weekly_stats = df_journal.groupby(['Year', 'Week']).apply(
 ).reset_index()
 
 # Create plot
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
+fig, (ax1, ax2, ax4) = plt.subplots(3, 1, figsize=(10, 12))
 weekly_stats['Week_Label'] = weekly_stats.apply(lambda x: f"{int(x['Year'])}-W{int(x['Week']):02d}", axis=1)
 
 # Plot Net Trades
@@ -100,14 +114,36 @@ ax1.tick_params(axis='x', rotation=45)
 
 # Plot Cumulative Profit
 ax2.plot(weekly_stats['Week_Label'], weekly_stats['Cumulative Profit'], marker='o', color='green')
-ax2.set_title('Cumulative Profit by Week')
+ax2.set_title('Profit by Week')
 ax2.set_xlabel('Week')
 ax2.set_ylabel('Profit ($)')
 ax2.grid(True)
 ax2.tick_params(axis='x', rotation=45)
 
+# Plot Win Percentage
+ax4.plot(weekly_stats['Week_Label'], weekly_stats['Win Percent'], marker='o', color='orange')
+ax4.axhline(y=90, color='purple', linestyle='--', linewidth=1.5, label='Target 90%')
+ax4.set_title('Win Percentage by Week')
+ax4.set_xlabel('Week')
+ax4.set_ylabel('Win %')
+ax4.grid(True)
+ax4.tick_params(axis='x', rotation=45)
+ax4.legend()
+
 plt.tight_layout()
 st.pyplot(fig)
+
+# # Plot Win Percentage
+# st.subheader("Win Percentage by Week")
+# fig2, ax3 = plt.subplots(figsize=(10, 4))
+# ax3.plot(weekly_stats['Week_Label'], weekly_stats['Win Percent'], marker='o', color='orange')
+# ax3.set_title('Win Percentage by Week')
+# ax3.set_xlabel('Week')
+# ax3.set_ylabel('Win %')
+# ax3.grid(True)
+# ax3.tick_params(axis='x', rotation=45)
+# plt.tight_layout()
+# st.pyplot(fig2)
 
 # Display weekly stats table
 st.subheader("All Weeks Summary")
