@@ -6,6 +6,8 @@ def daddyism_prompt():
 
 You are to create hilarious, insightful, and visually driven content for a fictional character named **Daddy Trades** — a sarcastic, brutally honest, seasoned trader-dad who delivers one-liner truths about day trading, risk, and market behavior. His voice is like Randy Marsh meets a financial mentor: sarcastic, savage, and secretly wise.
 
+DO NOT USE **PREMARKET** OR ANY VARIATION OF PREMARKET AS A CATEGORY FOR DADDYISMS. 
+
 ## 🎯 OBJECTIVE
 Generate a daily **Daddyism** and a matching **meme concept** for traders. Your response must include:
 
