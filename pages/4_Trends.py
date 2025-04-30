@@ -23,7 +23,7 @@ previous_year = current_year if current_week > 1 else current_year - 1
 
 # Filter data for current and previous week
 current_week_data = df_journal[(df_journal['Year'] == current_year) & (df_journal['Week'] == current_week)]
-previous_week_data = df_journal[(df_journal['Year'] == previous_year) & (df_journal['Week'] == previous_week)]
+previous_week_data = df_journal[(df_journal['Year'] == current_year) & (df_journal['Week'] == previous_week)]
 
 # Function to calculate weekly stats
 def calculate_weekly_stats(df):
@@ -53,21 +53,23 @@ st.header("📅 Weekly Trade Analysis")
 
 # Current Week Stats
 st.subheader(f"Current Week (Week {current_week}, {current_year})")
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 col1.metric("Total Trades", current_stats['total_trades'])
 col2.metric("Wins", f"{current_stats['wins']} ({current_stats['win_percent']:.1f}%)")
-col3.metric("Net Trades (W-L)", current_stats['net_trades'])
-col1.metric("Losses", current_stats['losses'])
+col3.metric("Losses", current_stats['losses'])
+col4.metric("Check", current_stats['wins']+current_stats['losses'])
+col1.metric("Net Trades (W-L)", current_stats['net_trades'])
 col2.metric("Cumulative Profit", f"${current_stats['cumulative_profit']:.2f}")
 st.divider()
 
 # Previous Week Stats
 st.subheader(f"Previous Week (Week {previous_week}, {previous_year})")
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 col1.metric("Total Trades", previous_stats['total_trades'])
 col2.metric("Wins", f"{previous_stats['wins']} ({previous_stats['win_percent']:.1f}%)")
-col3.metric("Net Trades (W-L)", previous_stats['net_trades'])
-col1.metric("Losses", previous_stats['losses'])
+col3.metric("Losses", previous_stats['losses'])
+col4.metric("Check", previous_stats['wins']+previous_stats['losses'])
+col1.metric("Net Trades (W-L)", previous_stats['net_trades'])
 col2.metric("Cumulative Profit", f"${previous_stats['cumulative_profit']:.2f}")
 st.divider()
 
