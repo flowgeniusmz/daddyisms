@@ -101,7 +101,7 @@ weekly_stats = df_journal.groupby(['Year', 'Week']).apply(
 ).reset_index()
 
 # Create plot
-fig, (ax1, ax2, ax4) = plt.subplots(3, 1, figsize=(10, 8))
+fig, (ax1, ax2, ax4) = plt.subplots(3, 1, figsize=(10, 10))
 weekly_stats['Week_Label'] = weekly_stats.apply(lambda x: f"{int(x['Year'])}-W{int(x['Week']):02d}", axis=1)
 
 # Plot Net Trades
