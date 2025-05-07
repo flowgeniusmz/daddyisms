@@ -95,7 +95,7 @@ if st.session_state.watchlist:
     if st.button("✅ Approve and Send to Discord"):
         with st.spinner("Sending to Discord..."):
             try:
-                success = set_send_embed(description=st.session_state.watchlist, type="ai")
+                success = set_send_embed(description=f"{st.session_state.watchlist}", type="ai")
                 if success:
                     st.success("📤 Successfully posted to Discord!")
                 else:
