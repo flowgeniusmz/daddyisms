@@ -26,7 +26,7 @@ temperature = .1
 max_output_tokens = 16000
 
 #### 1C. Discord Webhook
-url = st.secrets.discord.watchlist_url
+url = st.secrets.webhooks.watchlist
 logo_path = "logo.png"
 title = f"Watchlist - {today}"
 color = "03b2f8"
