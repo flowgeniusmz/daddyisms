@@ -35,12 +35,13 @@ def generate_image(prompt: str):
     result_base64 = result.data[0].b64_json
     return base64.b64decode(result_base64)
 
-# Meme Poster
+
 def post_to_discord(image_bytes: bytes, message: str, filename: str = "daddyism.png") -> bool:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
         tmp_file.write(image_bytes)
         tmp_file_path = tmp_file.name
 
+    success = True
     with open(tmp_file_path, "rb") as f:
         files = {
             'payload_json': (None, f'{{"content": "{message}"}}'),
@@ -48,8 +49,26 @@ def post_to_discord(image_bytes: bytes, message: str, filename: str = "daddyism.
         }
         for url in urls:
             response = requests.post(url=url, files=files)
+            if response.status_code not in [200, 204]:
+                success = False  # Mark as failed if any request fails
 
-            return response.status_code in [200, 204]
+    return success
+
+# # Meme Poster
+# def post_to_discord(image_bytes: bytes, message: str, filename: str = "daddyism.png") -> bool:
+#     with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
+#         tmp_file.write(image_bytes)
+#         tmp_file_path = tmp_file.name
+
+#     with open(tmp_file_path, "rb") as f:
+#         files = {
+#             'payload_json': (None, f'{{"content": "{message}"}}'),
+#             'file1': (filename, f, "image/png")
+#         }
+#         for url in urls:
+#             response = requests.post(url=url, files=files)
+
+#             return response.status_code in [200, 204]
 
 # Daddyism Generator
 def generate_daddyism():
